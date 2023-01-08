@@ -4,7 +4,7 @@ const logger = require('./loggerMiddleware')
 
 const app = express()
 
-app.use(express.json()) 
+app.use(express.json())
 
 app.use(logger)
 
@@ -48,7 +48,7 @@ app.get('/api/notes/:id', (req, res) => {
 app.delete('/api/notes/:id', (req, res) => {
   const id = Number(req.params.id)
   notes = notes.find((note) => note.id !== id)
-  res.status(204).end() 
+  res.status(204).end()
 })
 
 app.post('/api/notes', (req, res) => {
