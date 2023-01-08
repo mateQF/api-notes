@@ -1,29 +1,12 @@
-// import http from 'http' -> emascript modules
-// const http = require("http"); //modulos creados por nodejs, asi se importa en node
 
 const express = require('express')
 const logger = require('./loggerMiddleware')
-// cada vez q le llegue una peticion a este servidor, ejecuta esa funcion
-// const app = http.createServer((req, res) => {
-//   res.writeHead(200, { "Content-Type": "text/plain" }); //el content type depende del tipo de archivo que vas a devolver
-//   res.end("Hello World");
-// });
 
 const app = express()
 
-app.use(express.json()) // uso el parseador json de express, es un middleware
-
-// app.use((req, res, next) => {
-//   console.log(req.method)
-//   console.log(req.path)
-//   console.log(req.body)
-//   console.log('------')
-//   next() // para que vaya a la siguiene ruta y no se quede ahi esperando
-// })
+app.use(express.json()) 
 
 app.use(logger)
-
-// use recibe cualquier tipo de peticion, get, post, etc. Y en este caso, como no pusimos ningun path especifico, van a pasar todas
 
 let notes = [
   {
@@ -53,7 +36,7 @@ app.get('/api/notes', (req, res) => {
 })
 
 app.get('/api/notes/:id', (req, res) => {
-  const id = Number(req.params.id) // pq siempre llega como string lo de la url
+  const id = Number(req.params.id)
   const note = notes.find((note) => note.id === id)
   if (note) {
     res.json(note)
@@ -64,8 +47,8 @@ app.get('/api/notes/:id', (req, res) => {
 
 app.delete('/api/notes/:id', (req, res) => {
   const id = Number(req.params.id)
-  notes = notes.find((note) => note.id !== id) // se guardan todas las que NO coincidan con la q quiero borrar
-  res.status(204).end() // 204: no content
+  notes = notes.find((note) => note.id !== id)
+  res.status(204).end() 
 })
 
 app.post('/api/notes', (req, res) => {
