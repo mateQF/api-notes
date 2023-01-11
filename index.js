@@ -1,83 +1,80 @@
+require('dotenv').config()
+require('./mongo')
 const express = require('express')
 const cors = require('cors')
 const logger = require('./loggerMiddleware')
 const app = express()
+const Note = require('./models/Note')
 
 app.use(cors())
 app.use(express.json())
 app.use(logger)
 
-let notes = [
-  {
-    id: 1,
-    title:
-      'sunt aut facere repellat provident occaecati excepturi optio reprehenderit',
-    content: 'quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto'
-  },
-  {
-    id: 2,
-    title: 'qui est esse',
-    content: 'est rerum tempore vitae\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\nqui aperiam non debitis possimus qui neque nisi nulla'
-  },
-  {
-    id: 3,
-    title: 'ea molestias quasi exercitationem repellat qui ipsa sit aut',
-    content: 'et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut ad\nvoluptatem doloribus vel accusantium quis pariatur\nmolestiae porro eius odio et labore et velit aut'
-  }
-]
+// let notes = []
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World</h1>')
 })
 
 app.get('/api/notes', (req, res) => {
-  res.json(notes)
+  Note.find({}).then(notes => {
+    res.json(notes)
+  })
 })
 
-app.get('/api/notes/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const note = notes.find((note) => note.id === id)
-  if (note) {
-    res.json(note)
-  } else {
-    res.status(404).end()
-  }
+app.get('/api/notes/:id', (req, res, next) => {
+  const { id } = req.params
+
+  Note.findById(id).then(note => {
+    if (note) {
+      res.json(note)
+    } else {
+      res.status(404).end()
+    }
+  }).catch(err => {
+    next(err)
+  })
 })
 
-app.delete('/api/notes/:id', (req, res) => {
-  const id = Number(req.params.id)
-  notes = notes.find((note) => note.id !== id)
-  res.status(204).end()
+app.delete('/api/notes/:id', (req, res, next) => {
+  const { id } = req.params
+
+  Note.findByIdAndRemove(id).then(result => {
+    res.status(204).end()
+  }).catch(err => next(err))
 })
 
 app.post('/api/notes', (req, res) => {
   const note = req.body
 
-  if (!note || !note.content) {
+  if (!note.content) {
     return res.status(400).json({
       error: 'note.content is required'
     })
   }
 
-  const ids = notes.map((note) => note.id)
-  const maxId = Math.max(...ids)
-
-  const newNote = {
-    id: maxId + 1,
+  const newNote = new Note({
     content: note.content,
     important: typeof note.important !== 'undefined' ? note.important : false,
-    date: new Date().toISOString()
-  }
+    date: new Date()
+  })
 
-  notes = [...notes, newNote]
-
-  res.status(201).json(newNote)
+  newNote.save().then(savedNote => {
+    res.json(savedNote)
+  }).catch(err => {
+    console.error(err)
+  })
 })
 
-app.use((req, res) => {
-  res.status(404).json({
-    error: 'Not Found'
-  })
+app.use((error, req, res, next) => {
+  console.error(error)
+  if (error.name === 'CastError') {
+    res.status(400).send({
+      error: 'The id used is incorrect'
+    })
+  } else {
+    res.status(500).end()
+  }
 })
 
 const PORT = process.env.PORT || 3001
