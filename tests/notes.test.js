@@ -1,6 +1,6 @@
 // const mongoose = require('mongoose')
 const Note = require('../models/note')
-const { initialNotes, api, server, getAllContentsFromNotes } = require('./helpers')
+const { initialNotes, api, server, getAllContentsAndResponsesFromNotes } = require('./helpers')
 
 beforeEach(async () => { // hook
   await Note.deleteMany({})
@@ -20,12 +20,12 @@ test('notes are returned as json', async () => {
 })
 
 test('there are two notes', async () => {
-  const response = await api.get('/api/notes')
+  const { response } = await getAllContentsAndResponsesFromNotes()
   expect(response.body).toHaveLength(initialNotes.length)
 })
 
 test('the first note is about fullstack', async () => {
-  const { contents } = await getAllContentsFromNotes()
+  const { contents } = await getAllContentsAndResponsesFromNotes()
 
   expect(contents).toContain('Fullstack JS')
 })
@@ -42,7 +42,7 @@ test('a valid note can be added', async () => {
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
-  const { contents, response } = await getAllContentsFromNotes()
+  const { contents, response } = await getAllContentsAndResponsesFromNotes()
 
   expect(response.body).toHaveLength(initialNotes.length + 1)
   expect(contents).toContain(newNote.content)
@@ -58,7 +58,7 @@ test('note without content cannot be added', async () => {
     .send(newNote)
     .expect(400)
 
-  const response = await api.get('/api/notes')
+  const { response } = await getAllContentsAndResponsesFromNotes()
   expect(response.body).toHaveLength(initialNotes.length)
 })
 

@@ -15,7 +15,7 @@ const initialNotes = [
   }
 ]
 
-const getAllContentsFromNotes = async () => {
+const getAllContentsAndResponsesFromNotes = async () => {
   const response = await api.get('/api/notes')
   return {
     contents: response.body.map(note => note.content),
@@ -27,5 +27,5 @@ module.exports = {
   api,
   server,
   initialNotes,
-  getAllContentsFromNotes
+  getAllContentsAndResponsesFromNotes
 }
