@@ -12,6 +12,11 @@ const initialNotes = [
     content: 'React',
     important: true,
     date: new Date()
+  },
+  {
+    content: 'Node.js',
+    important: true,
+    date: new Date()
   }
 ]
 

@@ -9,6 +9,7 @@ const app = express()
 const Note = require('./models/Note')
 const notFound = require('./middleware/notFound')
 const handleErrors = require('./middleware/handleErrors')
+// const { response } = require('express')
 
 app.use(cors())
 app.use(express.json())
@@ -31,10 +32,9 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello World</h1>')
 })
 
-app.get('/api/notes', (req, res) => {
-  Note.find({}).then(notes => {
-    res.json(notes)
-  })
+app.get('/api/notes', async (req, res) => {
+  const notes = await Note.find({})
+  res.json(notes)
 })
 
 app.get('/api/notes/:id', (req, res, next) => {
@@ -65,15 +65,14 @@ app.put('/api/notes/:id', (req, res, next) => {
   }).catch(err => next(err))
 })
 
-app.delete('/api/notes/:id', (req, res, next) => {
+app.delete('/api/notes/:id', async (req, res, next) => {
   const { id } = req.params
 
-  Note.findByIdAndDelete(id).then(() => {
-    res.status(204).end()
-  }).catch(err => next(err))
+  await Note.findByIdAndDelete(id)
+  res.status(204).end()
 })
 
-app.post('/api/notes', (req, res, next) => {
+app.post('/api/notes', async (req, res, next) => {
   const note = req.body
 
   if (!note.content) {
@@ -88,11 +87,12 @@ app.post('/api/notes', (req, res, next) => {
     date: new Date()
   })
 
-  newNote.save().then(savedNote => {
+  try {
+    const savedNote = await newNote.save()
     res.json(savedNote)
-  }).catch(err => {
+  } catch (err) {
     next(err)
-  })
+  }
 })
 
 app.use(notFound)
