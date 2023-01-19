@@ -4,16 +4,14 @@ const express = require('express')
 const cors = require('cors')
 const Sentry = require('@sentry/node')
 const Tracing = require('@sentry/tracing')
-const logger = require('./loggerMiddleware')
 const app = express()
 const Note = require('./models/Note')
 const notFound = require('./middleware/notFound')
 const handleErrors = require('./middleware/handleErrors')
-// const { response } = require('express')
+const usersRouter = require('./controllers/users')
 
 app.use(cors())
 app.use(express.json())
-app.use(logger)
 
 Sentry.init({
   dsn: 'https://cd6061097f4742f2b9e03caa12538182@o4504498522488832.ingest.sentry.io/4504498523799552',
@@ -94,6 +92,8 @@ app.post('/api/notes', async (req, res, next) => {
     next(err)
   }
 })
+
+app.use('/api/users', usersRouter)
 
 app.use(notFound)
 app.use(Sentry.Handlers.errorHandler())

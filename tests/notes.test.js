@@ -1,4 +1,5 @@
 const Note = require('../models/note')
+const mongoose = require('mongoose')
 const { initialNotes, api, server, getAllContentsAndResponsesFromNotes } = require('./helpers')
 
 beforeEach(async () => { // hook
@@ -91,7 +92,7 @@ describe('delete a note', () => {
 })
 
 afterAll(() => { // hook
-//   mongoose.connection.close()
-//   mongoose.disconnect()
+  mongoose.connection.close()
+  mongoose.disconnect()
   server.close()
 })
