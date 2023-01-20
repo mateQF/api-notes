@@ -8,6 +8,13 @@ const app = express()
 const Note = require('./models/Note')
 const notFound = require('./middleware/notFound')
 const handleErrors = require('./middleware/handleErrors')
+
+// Routers
+const getAllNotesRouter = require('./controllers/getAllNotes')
+// const getNoteRouter = require('./controllers/getNote')
+const createNoteRouter = require('./controllers/createNote')
+// const updateNoteRouter = require('./controllers/updateNote')
+// const deleteNoteRouter = require('./controllers/deleteNote')
 const usersRouter = require('./controllers/users')
 
 app.use(cors())
@@ -22,35 +29,31 @@ Sentry.init({
 
   tracesSampleRate: 1.0
 })
-
 app.use(Sentry.Handlers.requestHandler())
 app.use(Sentry.Handlers.tracingHandler())
 
-app.get('/', (req, res) => {
-  res.send('<h1>Hello World</h1>')
-})
+app.get('/', (req, res) => { res.send('<h1>Hello World</h1>') })
+app.use('/api/notes', getAllNotesRouter)
 
-app.get('/api/notes', async (req, res) => {
-  const notes = await Note.find({})
-  res.json(notes)
-})
-
-app.get('/api/notes/:id', (req, res, next) => {
+// app.use('/api/notes/:id', getNoteRouter)
+app.get('/api/notes/:id', async (req, res, next) => {
   const { id } = req.params
 
-  Note.findById(id).then(note => {
-    if (note) {
-      res.json(note)
-    } else {
-      res.status(404).end()
-    }
-  }).catch(err => {
+  try {
+    const noteFound = await Note.findById(id)
+    res.json(noteFound)
+  } catch (err) {
+    res.status(404).end()
     next(err)
-  })
+  }
 })
 
-app.put('/api/notes/:id', (req, res, next) => {
+app.use('/api/notes', createNoteRouter)
+
+// app.use('/api/notes/:id', updateNoteRouter)
+app.put('/api/notes/:id', async (req, res, next) => {
   const { id } = req.params
+
   const note = req.body
 
   const newNoteInfo = {
@@ -58,38 +61,25 @@ app.put('/api/notes/:id', (req, res, next) => {
     important: note.important
   }
 
-  Note.findByIdAndUpdate(id, newNoteInfo, { new: true }).then(result => {
-    res.json(result)
-  }).catch(err => next(err))
+  try {
+    const noteUpdated = await Note.findByIdAndUpdate(id, newNoteInfo, { new: true })
+    res.json(noteUpdated)
+  } catch (err) {
+    console.log(err)
+    next(err)
+  }
 })
 
+// app.use('/api/notes/:id', deleteNoteRouter)
 app.delete('/api/notes/:id', async (req, res, next) => {
   const { id } = req.params
 
-  await Note.findByIdAndDelete(id)
-  res.status(204).end()
-})
-
-app.post('/api/notes', async (req, res, next) => {
-  const note = req.body
-
-  if (!note.content) {
-    return res.status(400).json({
-      error: 'note.content is required'
-    })
-  }
-
-  const newNote = new Note({
-    content: note.content,
-    important: typeof note.important !== 'undefined' ? note.important : false,
-    date: new Date()
-  })
-
   try {
-    const savedNote = await newNote.save()
-    res.json(savedNote)
+    await Note.findByIdAndDelete(id)
+    res.status(204).end()
   } catch (err) {
     next(err)
+    res.status(404).end()
   }
 })
 
