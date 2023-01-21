@@ -1,7 +1,7 @@
 const getNoteRouter = require('express').Router()
 const Note = require('../models/Note')
 
-getNoteRouter.get('/', async (req, res, next) => {
+getNoteRouter.get('/api/notes/:id', async (req, res, next) => {
   const { id } = req.params
 
   try {

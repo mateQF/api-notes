@@ -1,7 +1,7 @@
 const deleteNoteRouter = require('express').Router()
 const Note = require('../models/Note')
 
-deleteNoteRouter.delete('/', async (req, res, next) => {
+deleteNoteRouter.delete('/api/notes/:id', async (req, res, next) => {
   const { id } = req.params
 
   await Note.findByIdAndDelete(id)

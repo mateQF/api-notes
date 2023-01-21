@@ -1,7 +1,7 @@
 const updateNoteRouter = require('express').Router()
 const Note = require('../models/Note')
 
-updateNoteRouter.put('/', async (req, res, next) => {
+updateNoteRouter.put('/api/notes/:id', async (req, res, next) => {
   const { id } = req.params
   const note = req.body
 

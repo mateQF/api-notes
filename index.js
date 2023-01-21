@@ -5,16 +5,17 @@ const cors = require('cors')
 const Sentry = require('@sentry/node')
 const Tracing = require('@sentry/tracing')
 const app = express()
-const Note = require('./models/Note')
 const notFound = require('./middleware/notFound')
 const handleErrors = require('./middleware/handleErrors')
 
-// Routers
+// Routers -> notes
 const getAllNotesRouter = require('./controllers/getAllNotes')
-// const getNoteRouter = require('./controllers/getNote')
+const getNoteRouter = require('./controllers/getNote')
 const createNoteRouter = require('./controllers/createNote')
-// const updateNoteRouter = require('./controllers/updateNote')
-// const deleteNoteRouter = require('./controllers/deleteNote')
+const updateNoteRouter = require('./controllers/updateNote')
+const deleteNoteRouter = require('./controllers/deleteNote')
+
+// Routers -> users
 const usersRouter = require('./controllers/users')
 
 app.use(cors())
@@ -33,56 +34,15 @@ app.use(Sentry.Handlers.requestHandler())
 app.use(Sentry.Handlers.tracingHandler())
 
 app.get('/', (req, res) => { res.send('<h1>Hello World</h1>') })
+
+// Notes routers
 app.use('/api/notes', getAllNotesRouter)
-
-// app.use('/api/notes/:id', getNoteRouter)
-app.get('/api/notes/:id', async (req, res, next) => {
-  const { id } = req.params
-
-  try {
-    const noteFound = await Note.findById(id)
-    res.json(noteFound)
-  } catch (err) {
-    res.status(404).end()
-    next(err)
-  }
-})
-
+app.use(getNoteRouter)
 app.use('/api/notes', createNoteRouter)
+app.use(updateNoteRouter)
+app.use(deleteNoteRouter)
 
-// app.use('/api/notes/:id', updateNoteRouter)
-app.put('/api/notes/:id', async (req, res, next) => {
-  const { id } = req.params
-
-  const note = req.body
-
-  const newNoteInfo = {
-    content: note.content,
-    important: note.important
-  }
-
-  try {
-    const noteUpdated = await Note.findByIdAndUpdate(id, newNoteInfo, { new: true })
-    res.json(noteUpdated)
-  } catch (err) {
-    console.log(err)
-    next(err)
-  }
-})
-
-// app.use('/api/notes/:id', deleteNoteRouter)
-app.delete('/api/notes/:id', async (req, res, next) => {
-  const { id } = req.params
-
-  try {
-    await Note.findByIdAndDelete(id)
-    res.status(204).end()
-  } catch (err) {
-    next(err)
-    res.status(404).end()
-  }
-})
-
+// Users routers
 app.use('/api/users', usersRouter)
 
 app.use(notFound)
