@@ -9,11 +9,13 @@ const notFound = require('./middleware/notFound')
 const handleErrors = require('./middleware/handleErrors')
 
 // Routers -> notes
-const getAllNotesRouter = require('./controllers/getAllNotes')
-const getNoteRouter = require('./controllers/getNote')
-const createNoteRouter = require('./controllers/createNote')
-const updateNoteRouter = require('./controllers/updateNote')
-const deleteNoteRouter = require('./controllers/deleteNote')
+const {
+  getAllNotesRouter,
+  getNoteRouter,
+  createNoteRouter,
+  updateNoteRouter,
+  deleteNoteRouter
+} = require('./controllers/notes')
 
 // Routers -> users
 const usersRouter = require('./controllers/users')

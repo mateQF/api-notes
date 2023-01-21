@@ -1,7 +1,7 @@
-PUT http://localhost:3001/api/notes/63cbe7cd56995cafa2e7c9b7 HTTP/1.1
+PUT http://localhost:3001/api/notes/63cbf0799b63cee61b576ab7 HTTP/1.1
 content-type: application/json
 
 {
-    "content": "New content, updating note to check controllers function",
+    "content": "testing put request from controller",
     "important": true
 }
