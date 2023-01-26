@@ -20,6 +20,9 @@ const {
 // Routers -> users
 const usersRouter = require('./controllers/users')
 
+// Routers -> login
+const loginRouter = require('./controllers/login')
+
 app.use(cors())
 app.use(express.json())
 
@@ -46,6 +49,7 @@ app.use(deleteNoteRouter)
 
 // Users routers
 app.use('/api/users', usersRouter)
+app.use('/api/login', loginRouter)
 
 app.use(notFound)
 app.use(Sentry.Handlers.errorHandler())

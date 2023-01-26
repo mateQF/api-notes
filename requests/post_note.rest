@@ -1,10 +1,10 @@
 POST http://localhost:3001/api/notes HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZDJkNTUzMzg4NzY5YjA2MWEwZTFhMSIsInVzZXJOYW1lIjoiTWF0UUYiLCJpYXQiOjE2NzQ3NjM0MTcsImV4cCI6MTY3NTM2ODIxN30.Fzk2RptQyqH3XIaXgAyVqo2y0kSn7Hk2x67QitwNMd8
 
 {
-    "content": "creating note with user",
-    "important": true,
-    "userId": "63cbf4323633566dd361d607"
+    "content": "testing userExtractor",
+    "important": true
 }
 
 ###

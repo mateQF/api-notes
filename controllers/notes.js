@@ -5,6 +5,7 @@ const updateNoteRouter = require('express').Router()
 const deleteNoteRouter = require('express').Router()
 const Note = require('../models/Note')
 const User = require('../models/User')
+const userExtractor = require('../middleware/userExtractor')
 
 getNoteRouter.get('/api/notes/:id', async (req, res, next) => {
   const { id } = req.params
@@ -26,13 +27,13 @@ getAllNotesRouter.get('/', async (req, res) => {
   res.json(notes)
 })
 
-createNoteRouter.post('/', async (req, res, next) => {
+createNoteRouter.post('/', userExtractor, async (req, res, next) => {
   const {
     content,
-    important = false,
-    userId
+    important = false
   } = req.body
 
+  const { userId } = req
   const user = await User.findById(userId)
 
   if (!content) {
@@ -60,7 +61,7 @@ createNoteRouter.post('/', async (req, res, next) => {
   }
 })
 
-updateNoteRouter.put('/api/notes/:id', async (req, res, next) => {
+updateNoteRouter.put('/api/notes/:id', userExtractor, async (req, res, next) => {
   const { id } = req.params
   const note = req.body
 
@@ -78,7 +79,7 @@ updateNoteRouter.put('/api/notes/:id', async (req, res, next) => {
   }
 })
 
-deleteNoteRouter.delete('/api/notes/:id', async (req, res, next) => {
+deleteNoteRouter.delete('/api/notes/:id', userExtractor, async (req, res, next) => {
   const { id } = req.params
 
   await Note.findByIdAndDelete(id)

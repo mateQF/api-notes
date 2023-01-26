@@ -1,7 +1,8 @@
-PUT http://localhost:3001/api/notes/63cbf0799b63cee61b576ab7 HTTP/1.1
+PUT http://localhost:3001/api/notes/63d2dcb45af793784a0ee7c1 HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZDJkNTUzMzg4NzY5YjA2MWEwZTFhMSIsInVzZXJOYW1lIjoiTWF0UUYiLCJpYXQiOjE2NzQ3NjM0MTcsImV4cCI6MTY3NTM2ODIxN30.Fzk2RptQyqH3XIaXgAyVqo2y0kSn7Hk2x67QitwNMd8
 
 {
-    "content": "testing put request from controller",
+    "content": "testing put request with token",
     "important": true
 }
