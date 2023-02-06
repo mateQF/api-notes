@@ -5,12 +5,12 @@ const User = require('../models/User')
 
 loginRouter.post('/', async (req, res) => {
   const { body } = req
-  const { userName, password } = body
+  const { userName, passwordHash } = body
 
-  const user = await User.findOne({ userName }) // User.findOne({ userName })
+  const user = await User.findOne({ userName }) // User.findOne({ userName }) -> testing
   const passwordCorrect = user === null
     ? false
-    : await bcrypt.compare(password, user.passwordHash)
+    : await bcrypt.compare(passwordHash, user.passwordHash)
 
   if (!(user && passwordCorrect)) {
     res.status(401).json({
@@ -22,6 +22,11 @@ loginRouter.post('/', async (req, res) => {
     id: user._id,
     userName: user.userName
   }
+
+  if (userForToken === null) {
+    console.log('es null')
+  }
+  console.log(userForToken)
 
   const token = jwt.sign(
     userForToken,
